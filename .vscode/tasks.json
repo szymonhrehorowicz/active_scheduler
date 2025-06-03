@@ -1,0 +1,23 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--build", "--preset", "clang-default"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gcc"]
+    },
+    {
+      "label": "Configure",
+      "type": "shell",
+      "command": "cmake",
+      "args": ["--preset", "clang-default"],
+      "problemMatcher": ["$gcc"]
+    }
+  ]
+}
