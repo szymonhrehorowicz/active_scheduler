@@ -10,6 +10,18 @@
       "cwd": "${workspaceFolder}",
       "preLaunchTask": "Build",
       "console": "integratedTerminal"
+    },
+    {
+      "name": "ETL Debug (Windows)",
+      "type": "cppvsdbg",
+      "request": "launch",
+      "program": "${workspaceFolder}/build/clang-default/EtlInvestigations.exe",
+      "args": [],
+      "stopAtEntry": false,
+      "cwd": "${workspaceFolder}",
+      "environment": [],
+      "console": "integratedTerminal",
+      "preLaunchTask": "Build"
     }
   ]
 }

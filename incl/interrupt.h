@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tasks.h"
+#include "active_scheduler.h"
 
-void input_thread(ActiveTask &task);
+void input_thread(ActiveScheduler &task);
 void turn_off_thread();
