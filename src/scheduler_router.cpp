@@ -4,23 +4,22 @@
 void SchedulerRouter::receive(const etl::imessage &msg) {
   if (accepts(msg)) {
     m_queue.emplace(msg);
-
     std::cout << "Queueing message " << int(msg.get_message_id()) << std::endl;
   } else {
     std::cout << "Ignoring message " << int(msg.get_message_id()) << std::endl;
   }
-};
+}
 
 void SchedulerRouter::process_queue() {
-  while (!m_queue.empty()) {
-    message_packet &packet = m_queue.front();
+  message_packet packet;
+
+  while (m_queue.pop(packet)) {
     etl::imessage &msg = packet.get();
     std::cout << "Processing message " << int(msg.get_message_id())
               << std::endl;
     Base::receive(msg);
-    m_queue.pop();
   }
-};
+}
 
 void SchedulerRouter::on_receive(const IncrementWorkMessage &msg) {
   std::cout << "Router sending increment work message" << std::endl;

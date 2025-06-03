@@ -2,7 +2,7 @@
 
 #include "etl/message_bus.h"
 #include "etl/message_router.h"
-#include "etl/queue.h"
+#include "etl/queue_spsc_atomic.h"
 #include "messages.h"
 
 constexpr size_t NUM_OF_TASKS{10};
@@ -25,6 +25,6 @@ public:
   etl::imessage_bus &get_internal_bus();
 
 private:
-  etl::queue<message_packet, 10> m_queue;
+  etl::queue_spsc_atomic<message_packet, 10> m_queue;
   etl::message_bus<NUM_OF_TASKS> m_internal_bus;
 };
