@@ -16,6 +16,3 @@ void ActiveTask::on_receive(const DecrementWorkMessage &) {
 void ActiveTask::on_receive_unknown(const etl::imessage &) {
   std::cout << "Received unknown message" << std::endl;
 };
-
-// IdleHandler
-void IdleHandler::idle_callback() { m_scheduler.get_router().process_queue(); };

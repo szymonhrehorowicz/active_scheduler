@@ -19,7 +19,7 @@ public:
   void task_process_work() override {
     --m_work;
     std::cout << "Doing work from task " << m_id << std::endl;
-    std::this_thread::sleep_for(std::chrono::seconds(3));
+    std::this_thread::sleep_for(std::chrono::seconds(1));
   }
 
 private:
@@ -29,23 +29,16 @@ private:
 int main() {
   SomeTask some_task{1, 1};
   SomeTask some_other_task{2, 2};
-  ActiveScheduler scheduler;
-  IdleHandler idle_handler{scheduler};
+  ActiveScheduler scheduler{};
 
-  etl::function_mv<IdleHandler, &IdleHandler::idle_callback> idle_callback(
-      idle_handler);
-
-  // Start input monitoring thread
   std::thread input_monitor(input_thread, std::ref(scheduler));
-  input_monitor.detach(); // Let it run independently
+  input_monitor.detach();
 
   scheduler.add_task(some_task);
   scheduler.add_task(some_other_task);
-  scheduler.set_idle_callback(idle_callback);
 
-  std::cout << "Press 'Q' to trigger interrupt\n";
+  std::cout << "Press 'Q' to quit\n";
   scheduler.start();
-
   turn_off_thread();
 
   return 0;

@@ -8,21 +8,14 @@
 
 class ActiveScheduler;
 
-class IdleHandler {
-public:
-  IdleHandler(ActiveScheduler &scheduler) : m_scheduler(scheduler) {};
-
-  void idle_callback();
-
-private:
-  ActiveScheduler &m_scheduler;
-};
-
 class ActiveTask : public etl::task,
                    public etl::message_router<ActiveTask, IncrementWorkMessage,
                                               DecrementWorkMessage> {
 public:
   ActiveTask(int priority, int router_id) : task(priority), m_work(2) {};
+
+  virtual uint32_t task_request_work() const = 0;
+  virtual void task_process_work() = 0;
 
   void on_receive(const IncrementWorkMessage &);
   void on_receive(const DecrementWorkMessage &);
