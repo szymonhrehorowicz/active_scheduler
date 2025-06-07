@@ -1,8 +1,8 @@
-#include "pedal_position_ao.h"
+#include "pedal_position_task.h"
 #include <iomanip>
 #include <iostream>
 
-void Pedal_Position_Active_Object::update_1ms() {
+void Pedal_Position_Task::update_1ms() {
   std::cout << std::setw(40) << CLASS_NAME << "Updating 1 ms" << std::endl;
   m_position += 1.0f;
 

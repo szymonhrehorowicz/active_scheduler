@@ -5,17 +5,17 @@
 #include <iostream>
 #include <thread>
 
-#include "motor_control/motor_control_ao.h"
-#include "motor_control/motor_control_router.h"
+#include "motor_control/motor_control_adapter.h"
+#include "motor_control/motor_control_task.h"
 
-#include "pedal_position/pedal_position_ao.h"
-#include "pedal_position/pedal_position_router.h"
+#include "pedal_position/pedal_position_adapter.h"
+#include "pedal_position/pedal_position_task.h"
 
 int main() {
   etl::message_bus<2> public_bus;
 
-  Motor_Control_Active_Object motor_control_task{1, 1, public_bus};
-  Pedal_Position_Active_Object pedal_position_task{2, 2, public_bus};
+  Motor_Control_Task motor_control_task{1, 1, public_bus};
+  Pedal_Position_Task pedal_position_task{2, 2, public_bus};
 
   etl::scheduler<etl::scheduler_policy_highest_priority, 2> scheduler;
 

@@ -51,11 +51,11 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     src/main.cpp
     example/interrupt.cpp
 
-    example/motor_control/motor_control_ao.cpp
-    example/motor_control/motor_control_router.cpp
+    example/motor_control/motor_control_task.cpp
+    example/motor_control/motor_control_adapter.cpp
 
-    example/pedal_position/pedal_position_ao.cpp
-    example/pedal_position/pedal_position_router.cpp
+    example/pedal_position/pedal_position_task.cpp
+    example/pedal_position/pedal_position_adapter.cpp
 )
 
 # Configure ETL
