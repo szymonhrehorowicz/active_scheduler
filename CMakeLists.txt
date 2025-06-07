@@ -49,13 +49,13 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/etl etl)
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     src/main.cpp
-    src/interrupt.cpp
+    example/interrupt.cpp
 
-    example/motor_control_ao.cpp
-    example/motor_control_router.cpp
+    example/motor_control/motor_control_ao.cpp
+    example/motor_control/motor_control_router.cpp
 
-    example/pedal_position_ao.cpp
-    example/pedal_position_router.cpp
+    example/pedal_position/pedal_position_ao.cpp
+    example/pedal_position/pedal_position_router.cpp
 )
 
 # Configure ETL

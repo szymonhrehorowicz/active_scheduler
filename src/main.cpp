@@ -4,11 +4,11 @@
 #include <cassert>
 #include <thread>
 
-#include "motor_control_ao.h"
-#include "motor_control_router.h"
+#include "motor_control/motor_control_ao.h"
+#include "motor_control/motor_control_router.h"
 
-#include "pedal_position_ao.h"
-#include "pedal_position_router.h"
+#include "pedal_position/pedal_position_ao.h"
+#include "pedal_position/pedal_position_router.h"
 
 int main() {
   etl::message_bus<2> public_bus;
