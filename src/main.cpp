@@ -2,6 +2,7 @@
 #include "etl/scheduler.h"
 #include "interrupt.h"
 #include <cassert>
+#include <iostream>
 #include <thread>
 
 #include "motor_control/motor_control_ao.h"
@@ -25,7 +26,10 @@ int main() {
   scheduler.add_task(pedal_position_task);
 
   // Interrupts mock
-  std::thread input_monitor(input_thread, std::ref(public_bus));
+  std::cout << "Control interrupts from terminal, send 'h' for help"
+            << std::endl;
+  std::thread input_monitor(input_thread, std::ref(public_bus),
+                            std::ref(scheduler));
   input_monitor.detach();
 
   scheduler.start();

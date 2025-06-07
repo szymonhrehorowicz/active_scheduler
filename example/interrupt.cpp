@@ -5,7 +5,7 @@
 
 etl::atomic<bool> running{true};
 
-void input_thread(etl::imessage_bus &bus) {
+void input_thread(etl::imessage_bus &bus, etl::ischeduler &scheduler) {
   std::string input;
   while (running) {
     std::getline(std::cin, input);
@@ -52,6 +52,7 @@ void input_thread(etl::imessage_bus &bus) {
     }
 
     case 'q':
+      scheduler.exit_scheduler();
       running = false;
       break;
 
