@@ -10,15 +10,11 @@ class Motor_Control_Router
                            Steering_Wheel_Update_Message,
                            Pedal_Position_Update_Message> {
 public:
-  Motor_Control_Router(etl::message_router_id_t id)
-      : Active_Router(id), m_active_object(nullptr) {}
-
-  void set_active_object(Motor_Control_Active_Object &obj);
+  Motor_Control_Router(etl::message_router_id_t id,
+                       Active_Object_Interface &owner)
+      : Active_Router(id, owner) {}
 
   void on_receive(const Tick_1ms_Message &);
   void on_receive(const Steering_Wheel_Update_Message &);
   void on_receive(const Pedal_Position_Update_Message &);
-
-private:
-  Motor_Control_Active_Object *m_active_object;
 };

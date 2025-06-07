@@ -3,13 +3,21 @@
 #include "etl/message_router.h"
 #include "etl/queue_spsc_atomic.h"
 
+class Active_Object_Interface;
+
 class Active_Router_Interface : public etl::imessage_router {
 public:
-  Active_Router_Interface(etl::message_router_id_t id) : imessage_router(id) {}
+  Active_Router_Interface(etl::message_router_id_t id,
+                          Active_Object_Interface &owner)
+      : imessage_router(id), m_owner(owner) {}
+
   virtual void process_queue() = 0;
   virtual uint32_t get_queue_size() const = 0;
   virtual bool get_unknown_msg_flag() const = 0;
   virtual void reset_unknown_msg_flag() = 0;
+
+protected:
+  Active_Object_Interface &m_owner;
 };
 
 template <uint32_t QueueSize, typename TDerived, typename... TMessageTypes>
@@ -38,8 +46,8 @@ private:
 public:
   using message_packet = typename Router_Impl::message_packet;
 
-  Active_Router(etl::message_router_id_t id)
-      : Active_Router_Interface(id),
+  Active_Router(etl::message_router_id_t id, Active_Object_Interface &owner)
+      : Active_Router_Interface(id, owner),
         m_router(*static_cast<TDerived *>(this), id) {}
 
   void receive(const etl::imessage &msg) override {
@@ -51,8 +59,7 @@ public:
   void process_queue() override {
     message_packet packet;
     while (m_queue.pop(packet)) {
-      etl::imessage &msg = packet.get();
-      m_router.receive(msg);
+      m_router.receive(packet.get());
     }
   }
 
