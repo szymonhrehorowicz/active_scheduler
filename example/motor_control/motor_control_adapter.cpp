@@ -6,7 +6,6 @@ Motor_Control_Task &Motor_Control_Adapter::get_task() {
 }
 
 void Motor_Control_Adapter::on_receive(const Tick_1ms_Message &) {
-  auto &active_object = static_cast<Motor_Control_Task &>(m_owner);
   get_task().update_1ms();
 }
 
