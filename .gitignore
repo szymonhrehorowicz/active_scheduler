@@ -4,3 +4,4 @@ CMakeFiles
 *.cmake
 *.ninja
 CMakeCache.txt
+compile_commands.json
