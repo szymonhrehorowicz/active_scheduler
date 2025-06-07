@@ -4,13 +4,13 @@
 
 etl::atomic<bool> running{true};
 
-void input_thread(ActiveScheduler &scheduler) {
+void input_thread(etl::imessage_bus &bus) {
   while (running) {
     char c = std::cin.get();
     if (c == 'i') {
-      scheduler.get_router().receive(IncrementWorkMessage{});
+      bus.receive(IncrementWorkMessage{});
     } else if (c == 'd') {
-      scheduler.get_router().receive(DecrementWorkMessage{});
+      bus.receive(DecrementWorkMessage{});
     } else if (c == 'q') {
       running = false;
     }

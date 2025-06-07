@@ -49,10 +49,9 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/etl etl)
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     src/main.cpp
-    src/active_scheduler.cpp
-    src/active_task.cpp
+    src/active_router.cpp
     src/interrupt.cpp
-    src/scheduler_router.cpp
+    src/active_object.cpp
 )
 
 # Configure ETL

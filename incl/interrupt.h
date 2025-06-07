@@ -1,6 +1,6 @@
 #pragma once
 
-#include "active_scheduler.h"
+#include "etl/message_bus.h"
 
-void input_thread(ActiveScheduler &task);
+void input_thread(etl::imessage_bus &task);
 void turn_off_thread();
