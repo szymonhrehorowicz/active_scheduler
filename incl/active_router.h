@@ -2,6 +2,12 @@
 
 #include "etl/message_router.h"
 #include "etl/queue_spsc_atomic.h"
+#include <cstdint>
+
+struct Router_Stats {
+  volatile uint32_t overflow_counter{0};
+  volatile uint32_t unknown_message_counter{0};
+};
 
 class Active_Object_Interface;
 
@@ -13,8 +19,6 @@ public:
 
   virtual void process_queue() = 0;
   virtual uint32_t get_queue_size() const = 0;
-  virtual bool get_unknown_msg_flag() const = 0;
-  virtual void reset_unknown_msg_flag() = 0;
 
 protected:
   Active_Object_Interface &m_owner;
@@ -58,7 +62,7 @@ public:
   void receive(const etl::imessage &msg) override {
     if (m_router.accepts(msg)) {
       if (!m_queue.emplace(msg)) {
-        m_overflow_counter += 1;
+        m_router_stats.overflow_counter += 1;
       }
     }
   }
@@ -80,17 +84,13 @@ public:
   bool is_producer() const override { return true; }
   bool is_consumer() const override { return true; }
 
-  bool get_unknown_msg_flag() const override { return m_unknown_message_flag; }
-  void reset_unknown_msg_flag() override { m_unknown_message_flag = false; }
-
 protected:
   virtual void on_receive_unknown(const etl::imessage &) {
-    m_unknown_message_flag = true;
+    m_router_stats.unknown_message_counter += 1;
   }
 
 private:
   Router_Impl m_router;
   etl::queue_spsc_atomic<message_packet, QueueSize> m_queue;
-  bool m_unknown_message_flag{};
-  volatile uint32_t m_overflow_counter{0};
+  Router_Stats m_router_stats;
 };
