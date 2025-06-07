@@ -12,19 +12,17 @@
 class Motor_Control_Active_Object;
 
 class Motor_Control_Router
-    : public Active_Router<10, Motor_Control_Router, IncrementWorkMessage,
-                           DecrementWorkMessage> {
+    : public Active_Router<10, Motor_Control_Router, Tick_1ms_Message,
+                           Steering_Wheel_Update_Message,
+                           Pedal_Position_Update_Message> {
 public:
-  using Base = Active_Router<10, Motor_Control_Router, IncrementWorkMessage,
-                             DecrementWorkMessage>;
-
   Motor_Control_Router(Motor_Control_Active_Object &active_object,
                        etl::message_router_id_t id)
-      : m_active_object(active_object), Base(id) {}
+      : Active_Router(id), m_active_object(active_object) {}
 
-  void on_receive(const IncrementWorkMessage &);
-
-  void on_receive(const DecrementWorkMessage &);
+  void on_receive(const Tick_1ms_Message &);
+  void on_receive(const Steering_Wheel_Update_Message &);
+  void on_receive(const Pedal_Position_Update_Message &);
 
 private:
   Motor_Control_Active_Object &m_active_object;
@@ -36,36 +34,35 @@ public:
                               etl::message_router_id_t router_id)
       : m_router(*this, router_id), Active_Object(priority, m_router) {};
 
-  uint32_t task_request_work() const override {
-    return m_router.get_queue_size();
+  void update_1ms() { std::cout << "Updating 1 ms" << std::endl; }
+
+  void update_steering_wheel_data(float angle) {
+    std::cout << "New steering wheel angle received: " << angle << std::endl;
   }
 
-  void task_process_work() override {
-    m_router.process_queue();
-    --m_work;
-  }
-
-  void change_work_amount(int amount) {
-    if ((m_work - amount) > 0) {
-      m_work += amount;
-    }
+  void update_pedal_position_data(float position) {
+    std::cout << "New pedal position received: " << position << std::endl;
   }
 
 private:
   Motor_Control_Router m_router;
 
-  uint32_t m_work;
+  uint32_t m_work{0};
 };
 
-void Motor_Control_Router::on_receive(const IncrementWorkMessage &) {
-  std::cout << "Incrementing work" << std::endl;
-  m_active_object.change_work_amount(1);
-}
+void Motor_Control_Router::on_receive(const Tick_1ms_Message &) {
+  m_active_object.update_1ms();
+};
 
-void Motor_Control_Router::on_receive(const DecrementWorkMessage &) {
-  std::cout << "Decrementing work" << std::endl;
-  m_active_object.change_work_amount(-1);
-}
+void Motor_Control_Router::on_receive(
+    const Steering_Wheel_Update_Message &message) {
+  m_active_object.update_steering_wheel_data(message.angle);
+};
+
+void Motor_Control_Router::on_receive(
+    const Pedal_Position_Update_Message &message) {
+  m_active_object.update_pedal_position_data(message.position);
+};
 
 int main() {
   etl::message_bus<2> public_bus;
@@ -80,6 +77,8 @@ int main() {
   // Interrupts mock
   std::thread input_monitor(input_thread, std::ref(public_bus));
   input_monitor.detach();
+
+  scheduler.start();
 
   return 0;
 }
