@@ -22,6 +22,11 @@ protected:
 
 template <uint32_t QueueSize, typename TDerived, typename... TMessageTypes>
 class Active_Router : public Active_Router_Interface {
+  static_assert(QueueSize > 0 && QueueSize <= 256,
+                "Queue size must be reasonable for embedded system");
+  static_assert(sizeof...(TMessageTypes) <= 16,
+                "Too many message types may impact stack usage");
+
 private:
   class Router_Impl
       : public etl::message_router<Router_Impl, TMessageTypes...> {
@@ -52,7 +57,9 @@ public:
 
   void receive(const etl::imessage &msg) override {
     if (m_router.accepts(msg)) {
-      m_queue.emplace(msg);
+      if (!m_queue.emplace(msg)) {
+        m_overflow_counter += 1;
+      }
     }
   }
 
@@ -85,4 +92,5 @@ private:
   Router_Impl m_router;
   etl::queue_spsc_atomic<message_packet, QueueSize> m_queue;
   bool m_unknown_message_flag{};
+  volatile uint32_t m_overflow_counter{0};
 };
