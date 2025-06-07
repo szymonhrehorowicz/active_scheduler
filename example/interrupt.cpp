@@ -16,7 +16,6 @@ void input_thread(etl::imessage_bus &bus) {
     char command = input[0];
     float value = 0.0f;
 
-    // Parse value if present (format: "command:value")
     if (input.size() > 2 && input[1] == ':') {
       try {
         value = std::stof(input.substr(2));
