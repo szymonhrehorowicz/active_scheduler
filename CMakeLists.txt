@@ -51,6 +51,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
     src/main.cpp
     src/interrupt.cpp
     src/active_object.cpp
+
+    example/motor_control_ao.cpp
+    example/motor_control_router.cpp
 )
 
 # Configure ETL
@@ -58,4 +61,5 @@ target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE etl::etl)
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/external/etl/include
     ${CMAKE_CURRENT_SOURCE_DIR}/incl
+    ${CMAKE_CURRENT_SOURCE_DIR}/example
 )

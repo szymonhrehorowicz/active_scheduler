@@ -1,20 +1,32 @@
 [
 {
   "directory": "D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/build/clang-default",
-  "command": "C:\\LLVM\\bin\\clang++.exe -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/incl -isystem D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/external/etl/include -O0 -g -Xclang -gcodeview -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -o CMakeFiles\\EtlInvestigations.dir\\src\\main.cpp.obj -c D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\main.cpp",
+  "command": "C:\\LLVM\\bin\\clang++.exe -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/incl -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/example -isystem D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/external/etl/include -O0 -g -Xclang -gcodeview -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -o CMakeFiles\\EtlInvestigations.dir\\src\\main.cpp.obj -c D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\main.cpp",
   "file": "D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\main.cpp",
   "output": "CMakeFiles\\EtlInvestigations.dir\\src\\main.cpp.obj"
 },
 {
   "directory": "D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/build/clang-default",
-  "command": "C:\\LLVM\\bin\\clang++.exe -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/incl -isystem D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/external/etl/include -O0 -g -Xclang -gcodeview -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -o CMakeFiles\\EtlInvestigations.dir\\src\\interrupt.cpp.obj -c D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\interrupt.cpp",
+  "command": "C:\\LLVM\\bin\\clang++.exe -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/incl -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/example -isystem D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/external/etl/include -O0 -g -Xclang -gcodeview -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -o CMakeFiles\\EtlInvestigations.dir\\src\\interrupt.cpp.obj -c D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\interrupt.cpp",
   "file": "D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\interrupt.cpp",
   "output": "CMakeFiles\\EtlInvestigations.dir\\src\\interrupt.cpp.obj"
 },
 {
   "directory": "D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/build/clang-default",
-  "command": "C:\\LLVM\\bin\\clang++.exe -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/incl -isystem D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/external/etl/include -O0 -g -Xclang -gcodeview -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -o CMakeFiles\\EtlInvestigations.dir\\src\\active_object.cpp.obj -c D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\active_object.cpp",
+  "command": "C:\\LLVM\\bin\\clang++.exe -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/incl -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/example -isystem D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/external/etl/include -O0 -g -Xclang -gcodeview -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -o CMakeFiles\\EtlInvestigations.dir\\src\\active_object.cpp.obj -c D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\active_object.cpp",
   "file": "D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\src\\active_object.cpp",
   "output": "CMakeFiles\\EtlInvestigations.dir\\src\\active_object.cpp.obj"
+},
+{
+  "directory": "D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/build/clang-default",
+  "command": "C:\\LLVM\\bin\\clang++.exe -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/incl -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/example -isystem D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/external/etl/include -O0 -g -Xclang -gcodeview -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -o CMakeFiles\\EtlInvestigations.dir\\example\\motor_control_ao.cpp.obj -c D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\example\\motor_control_ao.cpp",
+  "file": "D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\example\\motor_control_ao.cpp",
+  "output": "CMakeFiles\\EtlInvestigations.dir\\example\\motor_control_ao.cpp.obj"
+},
+{
+  "directory": "D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/build/clang-default",
+  "command": "C:\\LLVM\\bin\\clang++.exe -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/incl -ID:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/example -isystem D:/ENGINEERING/IT/LANGUAGES/CPP/etl_investigations/external/etl/include -O0 -g -Xclang -gcodeview -std=gnu++20 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -o CMakeFiles\\EtlInvestigations.dir\\example\\motor_control_router.cpp.obj -c D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\example\\motor_control_router.cpp",
+  "file": "D:\\ENGINEERING\\IT\\LANGUAGES\\CPP\\etl_investigations\\example\\motor_control_router.cpp",
+  "output": "CMakeFiles\\EtlInvestigations.dir\\example\\motor_control_router.cpp.obj"
 }
 ]
