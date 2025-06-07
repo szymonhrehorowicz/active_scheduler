@@ -19,3 +19,5 @@ void Active_Object::set_internal_router(Active_Router_Interface &router) {
   assert(m_internal_router == nullptr);
   m_internal_router = &router;
 };
+
+Active_Object::~Active_Object() { delete m_internal_router; }

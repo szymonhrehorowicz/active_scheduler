@@ -34,9 +34,7 @@ void input_thread(etl::imessage_bus &bus) {
 
     case 'a': {
       if (input.size() > 2) {
-        Steering_Wheel_Update_Message msg;
-        msg.angle = value;
-        bus.receive(msg);
+        bus.receive(Steering_Wheel_Update_Message{value});
       } else {
         std::cout << "Missing angle value. Use a:angle (e.g., a:80.0)"
                   << std::endl;
@@ -46,9 +44,7 @@ void input_thread(etl::imessage_bus &bus) {
 
     case 'p': {
       if (input.size() > 2) {
-        Pedal_Position_Update_Message msg;
-        msg.position = value;
-        bus.receive(msg);
+        bus.receive(Pedal_Position_Update_Message{value});
       } else {
         std::cout << "Missing position value. Use p:position (e.g., p:0.75)"
                   << std::endl;
