@@ -3,14 +3,38 @@ from os import name
 from yaml import load, Loader
 import argparse
 
-class Validation_Strategy:
+class Validator:
+    def validate(data, expected_tags, expected_types):
+        try:
+            ids = []
+            for message in data:
+                Validator.check_whitespaces(message)
+                Validator.check_message_tags(data[message].keys(), expected_tags)
+
+                ids.append(data[message]["id"])
+                payload_amount = len(data[message]["payload"])
+
+                for payload_tag in data[message]["payload"]:
+                    if(not payload_tag and payload_amount > 1):
+                        raise Exception(f"If there is a payload in {message} message, there can be no null tag!")
+                    if(payload_tag):
+                        Validator.check_payload_datatype(payload_tag[list(payload_tag.keys())[0]], expected_types)
+            
+            Validator.check_list_uniqueness(ids, "ids")
+
+            return True
+        except Exception as error:
+            print('ERROR | ' + error.args[0])
+        
+        return False
+
     def check_whitespaces(text: str):
         if text.count(" ") != 0:
             raise Exception(f"There should be no whitespaces in tag names! TAG_NAME: {text}")
     
     def check_message_tags(tags: list, expected_tags: list):
         for tag in tags:
-            Validation_Strategy.check_whitespaces(tag)
+            Validator.check_whitespaces(tag)
             if tag not in expected_tags:
                 raise Exception(f"The {tag.upper()} tag is not expected for this type of message")
         if len(tags) != len(expected_tags):
@@ -25,35 +49,14 @@ class Validation_Strategy:
             raise Exception(f"{type} is an unknown type!")
 
         
-class Internal_Strategy(Validation_Strategy):
+class Internal_Strategy(Validator):
     def __init__(self, data):
         self.data = data
         self.expected_tags = ["name", "id", "payload"]
         self.expected_types = ["uint8_t", "uint16_t", "uint32_t", "float", "double", "bool"]
 
     def validate(self):
-        try:
-            ids = []
-            for message in self.data:
-                Validation_Strategy.check_whitespaces(message)
-                Validation_Strategy.check_message_tags(self.data[message].keys(), self.expected_tags)
-
-                ids.append(self.data[message]["id"])
-                payload_amount = len(self.data[message]["payload"])
-
-                for payload_tag in self.data[message]["payload"]:
-                    if(not payload_tag and payload_amount > 1):
-                        raise Exception(f"If there is a payload in {message} message, there can be no null tag!")
-                    if(payload_tag):
-                        Validation_Strategy.check_payload_datatype(payload_tag[list(payload_tag.keys())[0]], self.expected_types)
-            
-            Validation_Strategy.check_list_uniqueness(ids, "ids")
-
-            return True
-        except Exception as error:
-            print('ERROR | ' + error.args[0])
-        
-        return False
+        return Validator.validate(self.data, self.expected_tags, self.expected_types)
 
     def generate(self, path):
         content = f"""// THIS FILE WAS AUTO-GENERATED, DO NOT MODIFY\n\n"""
@@ -132,9 +135,7 @@ class YAML_Parser:
     def generate(self, target_file) -> None:
         try:
             assert(self.strategy)
-
             self.strategy.generate(target_file)
-
 
             return True
         except AssertionError:
