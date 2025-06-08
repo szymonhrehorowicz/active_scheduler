@@ -48,7 +48,7 @@ add_subdirectory(${CMAKE_SOURCE_DIR}/external/etl etl)
 
 # Add sources to executable
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    src/main.cpp
+    example/example.cpp
     example/interrupt.cpp
 
     example/motor_control/motor_control_task.cpp

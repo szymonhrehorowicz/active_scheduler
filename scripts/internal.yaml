@@ -1,0 +1,25 @@
+HEADER:
+  type: Internal
+# Timers
+tick_1ms:
+  name: Tick 1 ms
+  id: 0x01
+  payload:
+    - null
+# Pedal position
+pedal_position_update:
+  name: Pedal position
+  id: 0x02
+  payload:
+    - position: float
+pedal_position_reset:
+  name: Pedal position reset
+  id: 0x03
+  payload:
+    - null
+# Steering wheel
+steering_wheel_update:
+  name: Steering wheel angle
+  id: 0x04
+  payload:
+    - angle: float

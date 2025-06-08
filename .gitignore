@@ -5,3 +5,4 @@ CMakeFiles
 *.ninja
 CMakeCache.txt
 compile_commands.json
+venv

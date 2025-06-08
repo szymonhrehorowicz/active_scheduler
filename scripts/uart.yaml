@@ -1,0 +1,36 @@
+HEADER:
+  type: UART
+# Diagnostics
+status_msg:
+  full_name: Status message
+  id: 0x01
+  source: all
+  target: logger
+  payload:
+    - overflow_counter: uint32_t
+    - unknown_message_counter: uint32_t
+# Data transfer
+pedal_position:
+  full_name: Pedal position
+  id: 0x02
+  source: measurement_board
+  target: control_board
+  payload:
+    - position: float
+steering_wheel:
+  full_name: Steering wheel angle
+  name: 
+  id: 0x03
+  source: measurement_board
+  target: control_board
+  payload:
+    - angle: float
+reset_pedal_position:
+  full_name: Reset pedal position
+  name: 
+  id: 0x04
+  source: control_board
+  target: measurement_board
+  payload:
+    - null
+# Errors
