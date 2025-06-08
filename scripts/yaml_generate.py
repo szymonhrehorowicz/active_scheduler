@@ -1,93 +1,10 @@
-from email import header
 from os import name
 from yaml import load, Loader
 import argparse
 
-class Validator:
-    def validate(data, expected_tags, expected_types):
-        try:
-            ids = []
-            for message in data:
-                Validator.check_whitespaces(message)
-                Validator.check_message_tags(data[message].keys(), expected_tags)
-
-                ids.append(data[message]["id"])
-                payload_amount = len(data[message]["payload"])
-
-                for payload_tag in data[message]["payload"]:
-                    if(not payload_tag and payload_amount > 1):
-                        raise Exception(f"If there is a payload in {message} message, there can be no null tag!")
-                    if(payload_tag):
-                        Validator.check_payload_datatype(payload_tag[list(payload_tag.keys())[0]], expected_types)
-            
-            Validator.check_list_uniqueness(ids, "ids")
-
-            return True
-        except Exception as error:
-            print('ERROR | ' + error.args[0])
-        
-        return False
-
-    def check_whitespaces(text: str):
-        if text.count(" ") != 0:
-            raise Exception(f"There should be no whitespaces in tag names! TAG_NAME: {text}")
-    
-    def check_message_tags(tags: list, expected_tags: list):
-        for tag in tags:
-            Validator.check_whitespaces(tag)
-            if tag not in expected_tags:
-                raise Exception(f"The {tag.upper()} tag is not expected for this type of message")
-        if len(tags) != len(expected_tags):
-            raise Exception("The amount of provided message tags does not match the expected amount!")
-        
-    def check_list_uniqueness(array: list, list_name: str):
-        if len(array) > len(set(array)):
-            raise Exception(f"All {list_name} should be UNIQUE!")
-        
-    def check_payload_datatype(type: str, known_types: list):
-        if type not in known_types:
-            raise Exception(f"{type} is an unknown type!")
-
-        
-class Internal_Strategy(Validator):
-    def __init__(self, data):
-        self.data = data
-        self.expected_tags = ["name", "id", "payload"]
-        self.expected_types = ["uint8_t", "uint16_t", "uint32_t", "float", "double", "bool"]
-
-    def validate(self):
-        return Validator.validate(self.data, self.expected_tags, self.expected_types)
-
-    def generate(self, path):
-        content = f"""// THIS FILE WAS AUTO-GENERATED, DO NOT MODIFY\n\n"""
-        content += "#pragma once\n\n"
-        content += '#include "active_message.h"\n\n'
-        content += 'enum Message_Id {\n'
-        for message in self.data:
-            content += r"   "
-            content += message.upper()
-            content += " = " + str(self.data[message]["id"]) + ",\n"
-        content += "};\n\n"
-
-        for message in self.data:
-            formatted_name = '_'.join([s.capitalize() for s in message.split("_")])
-            content += "using " + formatted_name + "_Message = Active::Message<Message_Id::" + message.upper()
-
-            if(self.data[message]["payload"][0]):
-                for element in self.data[message]["payload"]:
-                    data_type = element[list(element.keys())[0]]
-                    content += ", " + data_type
-
-            content += ">;\n"
-
-        with open(path, "w") as header_file:
-            header_file.write(content)
-
-class UART_Strategy:
-    pass
-
-class CAN_Strategy:
-    pass
+from internal_strategy import Internal_Strategy
+from uart_strategy import UART_Strategy
+from can_strategy import CAN_Strategy
 
 class YAML_Parser:
     def __init__(self):
