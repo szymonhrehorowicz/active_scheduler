@@ -1,163 +1,110 @@
-# ETL Investigations Class Diagram
-
-This diagram shows the relationships between classes in the ETL Investigations project.
+# Active Object Framework Class Diagram
 
 ```plantuml
-@startuml ETL Task Scheduler
+@startuml Active Object Framework
 
-' Base interfaces
-interface "etl::task" as Task {
-  + {abstract} task_request_work(): uint32_t
-  + {abstract} task_process_work(): void
-  + on_task_added(): void
-  # task_running: bool
-  # task_priority: uint8_t
-}
+' External ETL classes
+abstract class "etl::task" as EtlTask
+abstract class "etl::message<ID>" as EtlMessage
+abstract class "etl::imessage_router" as EtlMessageRouter
+class "etl::imessage_bus" as EtlMessageBus
+class "etl::queue_spsc_atomic<T,Size>" as EtlQueue
 
-interface "etl::ischeduler" as IScheduler {
-  + start(): void
-  + set_idle_callback(callback: etl::ifunction<void>&)
-  + set_scheduler_running(running: bool)
-  # scheduler_running: bool
-  # scheduler_exit: bool
-}
+' Active Framework Interfaces
+namespace Active {
+    abstract class Object_Interface {
+        + Object_Interface(priority: uint32_t)
+        + {abstract} task_request_work(): uint32_t
+        + {abstract} task_process_work(): void
+        + {abstract} get_internal_router(): Router_Interface&
+    }
 
-interface "etl::message_router" as MessageRouter {
-  + {abstract} receive(msg: etl::imessage&)
-  + {abstract} on_receive_unknown(msg: etl::imessage&)
-}
+    abstract class Router_Interface {
+        + Router_Interface(id: message_router_id_t, owner: Object_Interface&)
+        + {abstract} process_queue(): void
+        + {abstract} get_queue_size(): uint32_t
+        # m_owner: Object_Interface&
+    }
 
-interface "etl::imessage_bus" as IMessageBus {
-  + subscribe(subscriber)
-  + unsubscribe(subscriber)
-  + receive(message)
-}
+    struct Router_Stats {
+        + overflow_counter: uint32_t
+        + unknown_message_counter: uint32_t
+    }
 
-' Policy class
-class "etl::scheduler_policy_sequential_single" as SchedulerPolicy {
-  + schedule_tasks(task_list: etl::ivector<etl::task*>&): bool
-}
+    ' Template Classes
+    class "Object<RouterType>" as Object {
+        + Object(priority: uint32_t, router_id: message_router_id_t, public_bus: etl::imessage_bus&)
+        # m_router: RouterType
+        # m_public_bus: etl::imessage_bus&
+    }
 
-' Our implementation classes
-class ActiveScheduler {
-  + ActiveScheduler()
-  + add_task(task: ActiveTask&)
-  + get_router(): SchedulerRouter&
-  + idle_callback(): void
-  - callback: etl::function_mv
-  - m_router: SchedulerRouter
-}
+    class "Router<Queue_Size,T_Derived,T_Message_Types...>" as Router {
+        + Router(id: message_router_id_t, owner: Object_Interface&)
+        + receive(msg: etl::imessage&): void
+        + process_queue(): void
+        + get_queue_size(): uint32_t
+        + accepts(id: message_id_t): bool
+        # on_receive_unknown(msg: etl::imessage&): void
+        - m_router: Router_Impl
+        - m_queue: etl::queue_spsc_atomic
+        - m_router_stats: Router_Stats
+    }
 
-class ActiveTask {
-  + ActiveTask(priority: int, router_id: int)
-  + task_request_work(): uint32_t
-  + task_process_work(): void
-  + on_receive(msg: IncrementWorkMessage)
-  + on_receive(msg: DecrementWorkMessage)
-  # m_work: int
-}
+    class "Message<ID>" as MessageNoPayload {
+        + Message()
+    }
 
-class SchedulerRouter {
-  + SchedulerRouter(router_id: int)
-  + receive(msg: etl::imessage&)
-  + process_queue()
-  + get_internal_bus(): etl::imessage_bus&
-  - m_queue: etl::queue_spsc_atomic<message_packet, 10>  
-  - m_internal_bus: etl::message_bus<NUM_OF_TASKS>
-}
-
-class SomeTask {
-  + SomeTask(priority: int, id: int)
-  + task_process_work(): void
-  - m_id: int
-}
-
-' Message types
-class "etl::imessage" as IMessage {
-  + get_message_id(): id_t
-}
-
-class IncrementWorkMessage {
-  + static const id: uint8_t
-}
-
-class DecrementWorkMessage {
-  + static const id: uint8_t
+    class "Message<ID,T_Payload...>" as MessageWithPayload {
+        + Message()
+        + Message(payload: T_Payload...)
+        + get_payload(): payload_tuple&
+        + get<I>(): auto&
+        - m_payload: payload_tuple
+    }
 }
 
 ' Inheritance relationships
-IScheduler <|-- ActiveScheduler
-Task <|-- ActiveTask
-MessageRouter <|-- ActiveTask
-MessageRouter <|-- SchedulerRouter
-ActiveTask <|-- SomeTask
-IMessage <|-- IncrementWorkMessage
-IMessage <|-- DecrementWorkMessage
+EtlTask <|-- Active.Object_Interface
+EtlMessageRouter <|-- Active.Router_Interface
+Active.Object_Interface <|-- Active.Object
+Active.Router_Interface <|-- Active.Router
+EtlMessage <|-- Active.MessageNoPayload
+EtlMessage <|-- Active.MessageWithPayload
 
-' Usage relationships
-SchedulerPolicy <-- ActiveScheduler : uses
-ActiveScheduler *-- SchedulerRouter : owns >
-SchedulerRouter o-- IMessageBus : manages >
-ActiveTask o-- IMessageBus : subscribes to <
-IMessageBus ..> IMessage : routes >
+' Composition/Association relationships
+Active.Object *-- Active.Router : owns >
+Active.Router *-- Active.Router_Stats : has >
+Active.Router o-- EtlQueue : uses >
+Active.Object o-- EtlMessageBus : uses >
 
-' Message flow
-SchedulerRouter "1" --> "*" ActiveTask : routes messages to >
+note "Queue_Size: 0 < size <= 256\nT_Message_Types: max 16 types" as N1
+N1 .. Active.Router
 
-note top of IMessage
-  Base interface for all messages
-  flowing through the system
-end note
-
-note left of ActiveTask
-  Base class for all tasks that can
-  receive messages and do work
-end note
-
-note right of SchedulerRouter
-  Handles thread-safe message passing
-  between interrupts and main thread
-  using atomic queue
-end note
-
-note bottom of ActiveScheduler
-  Manages task scheduling and
-  idle processing of queued messages.
-  Uses router to distribute messages.
-end note
+note "Template specialization for\nmessages with/without payload" as N2
+N2 .. Active.MessageWithPayload
 
 @enduml
 ```
 
-## Class Descriptions
+## Key Components
 
-### Core Components
+1. **Object System**
+   - `Object_Interface`: Base class for all active objects, inherits from ETL task system
+   - `Object<RouterType>`: Template implementation that ties an active object to its router
 
-- **SchedulerRouter**: Manages thread-safe message passing between interrupts and the main thread using an atomic queue
-- **ActiveScheduler**: Coordinates task execution and manages message routing during idle time
-- **ActiveTask**: Base class for tasks that can receive and process work messages
-- **SomeTask**: Concrete task implementation with specific work processing behavior
+2. **Router System**
+   - `Router_Interface`: Base class for message routing, inherits from ETL message router
+   - `Router<Queue_Size,T_Derived,T_Message_Types...>`: Template implementation with atomic message queue
+   - `Router_Stats`: Statistics tracking for overflow and unknown messages
 
-### Message Infrastructure
+3. **Message System**
+   - `Message<ID>`: Specialization for messages without payload
+   - `Message<ID,T_Payload...>`: Specialization for messages with typed payload
 
-- **etl::imessage**: Base interface for all messages in the system 
-- **IncrementWorkMessage/DecrementWorkMessage**: Concrete message types for work control
-- **etl::imessage_bus**: Message distribution system connecting routers to tasks
-- **etl::queue_spsc_atomic**: Thread-safe queue for interrupt handling
+## Design Features
 
-### Key Relationships
-
-1. Task Hierarchy:
-   - Tasks inherit core functionality from `etl::task`
-   - `ActiveTask` adds message handling capabilities
-   - `SomeTask` provides concrete implementation
-
-2. Message Flow:
-   - Messages flow from interrupts through `SchedulerRouter`'s atomic queue
-   - Router distributes messages via its internal message bus
-   - Tasks receive messages through message bus subscription
-
-3. Scheduler Integration:
-   - `ActiveScheduler` coordinates task execution
-   - Uses sequential single policy for task scheduling
-   - Processes queued messages during idle time through router
+- **Type Safety**: Template parameters ensure type-safe message handling
+- **Memory Safety**: Fixed-size queues and compile-time size checks
+- **Real-Time**: Lock-free queue implementation for ISR safety
+- **Monitoring**: Built-in statistics for queue overflow and unknown messages
+- **Flexibility**: Support for both payload and non-payload messages
