@@ -2,11 +2,11 @@
   "version": 3,
   "configurePresets": [
     {
-      "name": "active-library",
+      "name": "active-library-example",
       "displayName": "Clang Default Config",
       "description": "Default build using Clang compiler with debug symbols",
       "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build/${presetName}",
+      "binaryDir": "${sourceDir}/../../build/${presetName}",
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Debug",
         "CMAKE_C_COMPILER": "clang",
@@ -17,8 +17,8 @@
   ],
   "buildPresets": [
     {
-      "name": "active-library",
-      "configurePreset": "active-library"
+      "name": "active-library-example",
+      "configurePreset": "active-library-example"
     }
   ]
 }
