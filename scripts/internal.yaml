@@ -23,3 +23,24 @@ steering_wheel_update:
   id: 0x04
   payload:
     - angle: float
+# Errors
+error_uart_overrun:
+  name: ERROR UART overrun
+  id: 0x05
+  payload:
+    - null
+error_uart_noise:
+  name: ERROR UART noise
+  id: 0x06
+  payload:
+    - null
+error_uart_framing:
+  name: ERROR UART framing
+  id: 0x07
+  payload:
+    - null
+error_uart_parity:
+  name: ERROR UART parity
+  id: 0x08
+  payload:
+    - null
