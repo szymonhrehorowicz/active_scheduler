@@ -1,6 +1,6 @@
 #pragma once
 
-#include "active_object.h"
+#include "active/active_object.h"
 #include "pedal_position_adapter.h"
 #include <string_view>
 

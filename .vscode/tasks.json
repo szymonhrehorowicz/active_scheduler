@@ -1,23 +1,37 @@
 {
   "version": "2.0.0",
   "tasks": [
+    // EXAMPLE
     {
-      "label": "Build",
       "type": "shell",
-      "command": "cmake",
-      "args": ["--build", "--preset", "clang-default"],
-      "group": {
-        "kind": "build",
-        "isDefault": true
+      "label": "[CONFIGURE] active-library-example",
+      "command": "cmake --preset=active-library-example",
+      "options": {
+        "cwd": "${workspaceFolder}/example/cmake"
       },
+      "group": "build",
       "problemMatcher": ["$gcc"]
     },
     {
-      "label": "Configure",
       "type": "shell",
-      "command": "cmake",
-      "args": ["--preset", "clang-default"],
+      "label": "[BUILD] active-library-example",
+      "command": "cmake --build --preset=active-library-example",
+      "options": {
+        "cwd": "${workspaceFolder}/example/cmake"
+      },
+      "group": "build",
+      "dependsOn": "[CONFIGURE] active-library-example",
       "problemMatcher": ["$gcc"]
+    },
+    {
+      "type": "shell",
+      "label": "[RUN] active-library-example",
+      "command": "${workspaceFolder}/build/library-tests/UnitTests.exe",
+      "options": {
+        "cwd": "${workspaceFolder}/example/cmake"
+      },
+      "group": "test",
+      "args": ["--gtest_filter=**"]
     }
   ]
 }

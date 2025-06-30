@@ -1,6 +1,6 @@
 #pragma once
 
-#include "active_message.h"
+#include "active/active_message.h"
 
 enum MessageId {
   TICK_1MS,

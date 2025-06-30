@@ -1,6 +1,6 @@
 #pragma once
 
-#include "active_message.h"
+#include "active/active_message.h"
 #include <cstdint>
 
 namespace UART {

@@ -48,6 +48,9 @@ target_sources(${CMAKE_PROJECT_NAME} PRIVATE
 
 target_include_directories(${CMAKE_PROJECT_NAME} PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/../../external/etl/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../incl
     ${CMAKE_CURRENT_SOURCE_DIR}/..
+)
+
+target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE
+    ActiveLibrary
 )
