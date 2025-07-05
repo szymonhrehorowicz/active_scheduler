@@ -29,12 +29,12 @@ template <typename RouterType> class Object : public Object_Interface
     {
     }
 
-    uint32_t task_request_work() const override
+    virtual uint32_t task_request_work() const override
     {
         return m_router.get_queue_size();
     }
 
-    void task_process_work() override
+    virtual void task_process_work() override
     {
         m_router.process_queue();
     }
