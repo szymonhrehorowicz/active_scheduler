@@ -17,6 +17,7 @@ class Object_Interface : public etl::task
     virtual uint32_t task_request_work() const = 0;
     virtual void task_process_work() = 0;
     virtual Router_Interface &get_internal_router() = 0;
+    virtual etl::imessage_bus &get_public_bus() = 0;
 };
 
 template <typename RouterType> class Object : public Object_Interface
@@ -42,6 +43,11 @@ template <typename RouterType> class Object : public Object_Interface
     Router_Interface &get_internal_router() override
     {
         return m_router;
+    }
+
+    etl::imessage_bus &get_public_bus() override
+    {
+        return m_public_bus;
     }
 
   protected:
