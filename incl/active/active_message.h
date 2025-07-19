@@ -23,12 +23,16 @@ template <etl::message_id_t ID> class Message<ID> : public etl::message<ID>
         buffer[0] = static_cast<uint8_t>(ID);
         size = 1;
     }
+
+    static bool from_buffer(const uint8_t *buffer, std::uint32_t size, Message<ID> &)
+    {
+        return size >= 1 && buffer[0] == static_cast<uint8_t>(ID);
+    }
 };
 
 template <etl::message_id_t ID, typename... T_Payload> class Message : public etl::message<ID>
 {
     static_assert(sizeof...(T_Payload) > 0, "Use Message<ID> for messages without payload");
-
     using payload_tuple = etl::tuple<T_Payload...>;
 
   public:
@@ -59,6 +63,20 @@ template <etl::message_id_t ID, typename... T_Payload> class Message : public et
         size = static_cast<std::uint32_t>(out - buffer);
     }
 
+    static bool from_buffer(const uint8_t *buf, std::uint32_t sz, Message &out)
+    {
+        if (sz < 1 || buf[0] != static_cast<uint8_t>(ID))
+            return false;
+
+        constexpr std::size_t kPayloadSize = (sizeof(T_Payload) + ... + 0);
+        if (sz < 1 + kPayloadSize)
+            return false;
+
+        const uint8_t *in = buf + 1;
+        deserialize_tuple(in, out.m_payload, etl::make_index_sequence<sizeof...(T_Payload)>{});
+        return true;
+    }
+
   private:
     payload_tuple m_payload;
 
@@ -73,6 +91,17 @@ template <etl::message_id_t ID, typename... T_Payload> class Message : public et
         static_assert(etl::is_trivially_copyable<T>::value, "Only trivially copyable types allowed");
         std::memcpy(out, &value, sizeof(T));
         out += sizeof(T);
+    }
+
+    template <typename Tuple, std::size_t... I>
+    static void deserialize_tuple(const uint8_t *in, Tuple &t, etl::index_sequence<I...>)
+    {
+        ((copy_one_from_buffer(in, etl::get<I>(t)), in += sizeof(T_Payload)), ...);
+    }
+
+    template <typename T> static void copy_one_from_buffer(const uint8_t *ptr, T &dst)
+    {
+        std::memcpy(&dst, ptr, sizeof(T));
     }
 };
 
