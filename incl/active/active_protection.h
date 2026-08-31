@@ -8,6 +8,7 @@
 #include <concepts>
 #include <functional>
 #include <iostream>
+#include <memory>
 #include <utility>
 
 namespace Active
@@ -189,6 +190,6 @@ class Protection_Manager_Impl : public etl::message_router<Protection_Manager_Im
 
 using Protection_Manager = etl::singleton<internal::Protection_Manager_Impl>;
 
-Protection make_protection_t0(uint32_t code, Protection_Events level, Protection_Function function);
+std::unique_ptr<Protection> make_protection_t0(uint32_t code, Protection_Events level, Protection_Function function);
 
 } // namespace Active

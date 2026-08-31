@@ -49,7 +49,7 @@ Motor_Control_Task::Motor_Control_Task(uint32_t priority, etl::message_router_id
 void Motor_Control_Task::update_1ms()
 {
     std::cout << std::setw(40) << CLASS_NAME << "Updating 1 ms" << std::endl;
-    for (auto protection : m_protections)
+    for (auto protection : m_protections_t0)
     {
         protection.evaluate();
     }
