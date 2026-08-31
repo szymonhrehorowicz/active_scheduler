@@ -7,6 +7,7 @@ add_library(${PROJECT_NAME} STATIC
 set(CMAKE_EXPORT_COMPILE_COMMANDS true)
 
 enable_language(C CXX ASM)
+set(CMAKE_CXX_STANDARD 20)
 
 target_compile_definitions(${PROJECT_NAME} PRIVATE
 )

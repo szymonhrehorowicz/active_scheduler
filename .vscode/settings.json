@@ -1,3 +1,4 @@
 {
-  "cSpell.words": ["UART", "USART"]
+  "cSpell.words": ["UART", "USART"],
+  "terminal.integrated.stickyScroll.enabled": false
 }

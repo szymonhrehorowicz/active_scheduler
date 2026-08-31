@@ -5,23 +5,23 @@
       "name": "ETL Debug (LLDB)",
       "type": "lldb",
       "request": "launch",
-      "program": "${workspaceFolder}/build/clang-default/EtlInvestigations.exe",
+      "program": "${workspaceFolder}/build/active-library-example/ActiveLibraryExample",
       "args": [],
       "cwd": "${workspaceFolder}",
-      "preLaunchTask": "Build",
+      "preLaunchTask": "[BUILD] active-library-example",
       "console": "integratedTerminal"
     },
     {
       "name": "ETL Debug (Windows)",
       "type": "cppvsdbg",
       "request": "launch",
-      "program": "${workspaceFolder}/build/clang-default/EtlInvestigations.exe",
+      "program": "${workspaceFolder}/build/active-library-example/ActiveLibraryExample",
       "args": [],
       "stopAtEntry": false,
       "cwd": "${workspaceFolder}",
       "environment": [],
       "console": "integratedTerminal",
-      "preLaunchTask": "Build"
+      "preLaunchTask": "[BUILD] active-library-example"
     }
   ]
 }

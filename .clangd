@@ -1,0 +1,14 @@
+CompileFlags:
+  # Prefer per-file flags from the compilation database; only add common include paths.
+  Add: ["-I", "./software",
+    "-I", "./external/etl/include"]
+  CompilationDatabase: build/active-library-example
+Diagnostics:
+  ClangTidy:
+    Remove: [modernize-*]
+
+Index:
+  Background: Build
+
+InlayHints:
+  Enabled: true
