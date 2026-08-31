@@ -21,7 +21,7 @@ class Motor_Control_Task : public Active::Object<Motor_Control_Adapter>
   private:
     float m_angle{};
     float m_position{};
-    Active::Protection<69> m_angle_protection;
-    Active::Protection<69> m_position_protection;
+    Active::Protection m_angle_protection;
+    Active::Protection m_position_protection;
     etl::vector<Active::Protection_Object, 2> m_protections{m_angle_protection, m_position_protection};
 };

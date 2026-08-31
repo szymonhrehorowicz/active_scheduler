@@ -18,6 +18,7 @@ target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
 )
 
 target_sources(${CMAKE_PROJECT_NAME} PRIVATE
+    ${CMAKE_CURRENT_LIST_DIR}/src/active_protection.cpp
 )
 
 target_link_directories(${PROJECT_NAME} PRIVATE

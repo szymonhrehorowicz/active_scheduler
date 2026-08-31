@@ -1,4 +1,5 @@
 #include "motor_control_task.h"
+#include "active/active_protection.h"
 #include <iomanip>
 #include <iostream>
 
@@ -18,15 +19,30 @@ Active::Protection_Data evaluate_angle(float angle, uint32_t aux_code)
     return data;
 }
 
+Active::Protection_Data evaluate_position(float position, uint32_t aux_code)
+{
+    Active::Protection_Data data{};
+
+    if (position > 100.0f)
+    {
+        data.is_triggered = true;
+        data.aux_code = aux_code;
+    }
+
+    return data;
+}
+
 } // namespace
 
 Motor_Control_Task::Motor_Control_Task(uint32_t priority, etl::message_router_id_t router_id,
                                        etl::imessage_bus &public_bus)
     : AO(priority, router_id, public_bus),
-      m_angle_protection(Active::Protection_Manager::instance().get_bus(), Active::Protection_Events::Alarm,
-                         [&angle = m_angle]() -> Active::Protection_Data { return evaluate_angle(angle, 0); }),
-      m_position_protection(Active::Protection_Manager::instance().get_bus(), Active::Protection_Events::Alarm,
-                            [&angle = m_angle]() -> Active::Protection_Data { return evaluate_angle(angle, 1); })
+      m_angle_protection(Active::make_protection_t0(
+          666, Active::Protection_Events::Alarm,
+          [&angle = m_angle]() -> Active::Protection_Data { return evaluate_angle(angle, 0); })),
+      m_position_protection(Active::make_protection_t0(
+          777, Active::Protection_Events::Alarm,
+          [&position = m_position]() -> Active::Protection_Data { return evaluate_position(position, 1); }))
 {
 }
 

@@ -2,6 +2,7 @@
 
 #include "active/active_message.h"
 #include "active/active_router.h"
+#include "active/active_signal.h"
 #include "etl/message_bus.h"
 #include "etl/singleton.h"
 #include <concepts>
@@ -16,8 +17,7 @@ enum Protection_Events
 {
     Alarm = 0,
     FC2 = 1,
-    FC1 = 2,
-    Reset = 3
+    FC1 = 2
 };
 
 struct Protection_Event_Data
@@ -35,7 +35,9 @@ struct Protection_Data
 using Protection_Alarm = Active::Message<Protection_Events::Alarm, Protection_Event_Data>;
 using Protection_FC2 = Active::Message<Protection_Events::FC2, Protection_Event_Data>;
 using Protection_FC1 = Active::Message<Protection_Events::FC1, Protection_Event_Data>;
-using Protection_Reset = Active::Message<Protection_Events::Reset>;
+
+// Temporary event for testing
+using Reset_Faults = Active::Message<255>;
 
 using Protection_Function = std::function<Protection_Data(void)>;
 
@@ -63,26 +65,19 @@ class Protection_Object
     void (*eval_fn)(void *);
 };
 
-template <uint32_t Code> class Protection : public etl::message_router<Protection<Code>, Protection_Reset>
+class Protection
 {
-    using Base = etl::message_router<Protection<Code>, Protection_Reset>;
-
   public:
-    explicit Protection(etl::imessage_bus &protection_bus, Protection_Events level, Protection_Function function)
-        : Base(Code), m_protection_bus(protection_bus), m_protection_level(level), m_function(std::move(function))
+    explicit Protection(uint32_t code, etl::imessage_bus &protection_bus, Signal<> &reset_signal,
+                        Protection_Events level, Protection_Function function)
+        : m_code(code), m_protection_bus(protection_bus), m_protection_level(level), m_function(std::move(function))
     {
-        protection_bus.subscribe(*this);
+        reset_signal.connect(this, &Protection::reset);
     };
 
-    void on_receive(Protection_Reset const & /*message*/)
+    void reset()
     {
-        std::cout << "Protection " << Code << " has been reset\n";
         m_has_raised_fault = false;
-    }
-
-    void on_receive_unknown(const etl::imessage & /*msg*/)
-    {
-        assert(false && "Protection received unknown message");
     }
 
     void evaluate()
@@ -91,7 +86,7 @@ template <uint32_t Code> class Protection : public etl::message_router<Protectio
 
         if (!m_has_raised_fault && result.is_triggered)
         {
-            Protection_Event_Data event_data{.code = Code, .aux_code = result.aux_code};
+            Protection_Event_Data event_data{.code = m_code, .aux_code = result.aux_code};
             m_has_raised_fault = true;
 
             switch (m_protection_level)
@@ -116,6 +111,7 @@ template <uint32_t Code> class Protection : public etl::message_router<Protectio
     }
 
   private:
+    uint32_t m_code;
     etl::imessage_bus &m_protection_bus;
     Protection_Function m_function;
     Protection_Events m_protection_level;
@@ -124,22 +120,30 @@ template <uint32_t Code> class Protection : public etl::message_router<Protectio
 
 namespace internal
 {
-class Protection_Manager_Impl
-    : public etl::message_router<Protection_Manager_Impl, Protection_Alarm, Protection_FC2, Protection_FC1>
+class Protection_Manager_Impl : public etl::message_router<Protection_Manager_Impl, Protection_Alarm, Protection_FC2,
+                                                           Protection_FC1, Reset_Faults>
 {
-    using Base = etl::message_router<Protection_Manager_Impl, Protection_Alarm, Protection_FC2, Protection_FC1>;
+    using Base =
+        etl::message_router<Protection_Manager_Impl, Protection_Alarm, Protection_FC2, Protection_FC1, Reset_Faults>;
 
   public:
-    Protection_Manager_Impl() : Base(0)
+    Protection_Manager_Impl(etl::imessage_bus &reset_bus /*temporary for testing purposes*/) : Base(0)
     {
-        m_protection_bus.subscribe(*this);
+        reset_bus.subscribe(*this);
+        m_bus_t0.subscribe(*this);
+        m_bus_t1.subscribe(*this);
+    };
+
+    void on_receive(Reset_Faults const & /*event*/)
+    {
+        std::cout << "Reseting faults\n";
+        m_reset_signal.emit();
     };
 
     void on_receive(Protection_Alarm const &event)
     {
         auto const payload = etl::get<0>(event.get_payload());
         std::cout << "Alarm [code: " << payload.code << " | aux code: " << payload.aux_code << "]\n";
-        m_protection_bus.receive(Protection_Reset{});
     };
 
     void on_receive(Protection_FC2 const &event)
@@ -159,18 +163,32 @@ class Protection_Manager_Impl
         assert(false && "Protection_Manager received unknown message");
     }
 
-    etl::imessage_bus &get_bus()
+    etl::imessage_bus &get_bus_t0()
     {
-        return m_protection_bus;
+        return m_bus_t0;
+    }
+
+    etl::imessage_bus &get_bus_t1()
+    {
+        return m_bus_t1;
+    }
+
+    Signal<> &get_reset_signal()
+    {
+        return m_reset_signal;
     }
 
   private:
-    // Note: There could be multiple buses, one for timelevel. Factory methods would create protections passing them
-    // correct (timelevel-wise) bus.
-    etl::message_bus<100> m_protection_bus{};
+    etl::message_bus<1> m_bus_t0{};
+    etl::message_bus<1> m_bus_t1{};
+
+    // Note: Each timelevel should have it's own reset signal
+    Signal<> m_reset_signal{};
 };
 } // namespace internal
 
 using Protection_Manager = etl::singleton<internal::Protection_Manager_Impl>;
+
+Protection make_protection_t0(uint32_t code, Protection_Events level, Protection_Function function);
 
 } // namespace Active

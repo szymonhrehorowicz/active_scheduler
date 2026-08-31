@@ -15,9 +15,10 @@
 
 int main()
 {
-    etl::message_bus<2> public_bus;
+    etl::message_bus<3> public_bus;
+    etl::message_bus<1> reset_bus;
 
-    Active::Protection_Manager::create();
+    Active::Protection_Manager::create(reset_bus);
 
     Motor_Control_Task motor_control_task{1, 1, public_bus};
     Pedal_Position_Task pedal_position_task{2, 2, public_bus};
@@ -32,7 +33,7 @@ int main()
 
     // Interrupts mock
     std::cout << "Control interrupts from terminal, send 'h' for help" << std::endl;
-    std::thread input_monitor(input_thread, std::ref(public_bus), std::ref(scheduler));
+    std::thread input_monitor(input_thread, std::ref(public_bus), std::ref(reset_bus), std::ref(scheduler));
     input_monitor.detach();
 
     scheduler.start();

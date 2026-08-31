@@ -1,11 +1,12 @@
 #include "interrupt.h"
+#include "active/active_protection.h"
 #include "messages.h"
 #include <iostream>
 #include <string>
 
 etl::atomic<bool> running{true};
 
-void input_thread(etl::imessage_bus &bus, etl::ischeduler &scheduler)
+void input_thread(etl::imessage_bus &bus, etl::imessage_bus &reset_bus, etl::ischeduler &scheduler)
 {
     std::string input;
     while (running)
@@ -61,6 +62,11 @@ void input_thread(etl::imessage_bus &bus, etl::ischeduler &scheduler)
             break;
         }
 
+        case 'r': {
+            reset_bus.receive(Active::Reset_Faults{});
+            break;
+        }
+
         case 'q':
             scheduler.exit_scheduler();
             running = false;
@@ -72,6 +78,7 @@ void input_thread(etl::imessage_bus &bus, etl::ischeduler &scheduler)
                       << "  t       - Send tick message\n"
                       << "  a:value - Send steering wheel angle update (e.g., a:80.0)\n"
                       << "  p:value - Send pedal position update (e.g., p:0.75)\n"
+                      << "  r       - Reset faults\n"
                       << "  q       - Quit\n"
                       << "  h/?     - Show this help\n";
             break;
