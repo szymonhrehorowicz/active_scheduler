@@ -1,28 +1,27 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(ActiveLibrary)
-add_library(${PROJECT_NAME} STATIC
-    ${CMAKE_CURRENT_LIST_DIR}/src/dummy.cpp
-)
-set(CMAKE_EXPORT_COMPILE_COMMANDS true)
+project(active_library)
 
-enable_language(C CXX ASM)
-set(CMAKE_CXX_STANDARD 20)
+# Dependencies
+if(NOT TARGET etl)
+    add_subdirectory(
+        "${CMAKE_CURRENT_SOURCE_DIR}/external/etl"
+        "${CMAKE_CURRENT_BINARY_DIR}/etl"
+    )
+endif()
 
-target_compile_definitions(${PROJECT_NAME} PRIVATE
-)
+add_library(active_library INTERFACE)
 
-target_include_directories(${CMAKE_PROJECT_NAME} PUBLIC
-    ${CMAKE_CURRENT_LIST_DIR}/external/etl/include
-    ${CMAKE_CURRENT_LIST_DIR}/incl
-)
+target_include_directories(active_library INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/incl")
 
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_LIST_DIR}/src/active_protection.cpp
-)
-
-target_link_directories(${PROJECT_NAME} PRIVATE
+target_compile_definitions(
+    active_library
+    INTERFACE
+    ETL_CPP17_SUPPORTED=1
 )
 
-target_link_libraries(${CMAKE_PROJECT_NAME})
-
+target_link_libraries(
+    active_library
+    INTERFACE
+    etl
+)
