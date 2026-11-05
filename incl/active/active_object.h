@@ -3,6 +3,7 @@
 #include "active_router.h"
 #include "etl/message_bus.h"
 #include "etl/task.h"
+#include "etl/type_traits.h"
 #include <cassert>
 
 namespace Active
@@ -22,7 +23,8 @@ class Object_Interface : public etl::task
 
 template <typename RouterType> class Object : public Object_Interface
 {
-    static_assert(std::is_base_of_v<Router_Interface, RouterType>, "RouterType must inherit from Router_Interface");
+    static_assert(etl::is_base_of<Router_Interface, RouterType>::value,
+                  "RouterType must inherit from Router_Interface");
 
   public:
     Object(uint32_t priority, etl::message_router_id_t router_id, etl::imessage_bus &public_bus)

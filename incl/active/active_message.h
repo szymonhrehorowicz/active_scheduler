@@ -4,7 +4,8 @@
 #include "etl/tuple.h"
 #include "etl/type_traits.h"
 #include <cstdint>
-#include <cstring>
+#include <stddef.h>
+#include <string.h>
 
 namespace Active
 {
@@ -49,7 +50,7 @@ template <etl::message_id_t ID, typename... T_Payload> class Message : public et
         return m_payload;
     }
 
-    template <std::size_t I> const typename etl::tuple_element<I, payload_tuple>::type &get() const
+    template <size_t I> const typename etl::tuple_element<I, payload_tuple>::type &get() const
     {
         static_assert(I < sizeof...(T_Payload), "Payload index out of bounds");
         return etl::get<I>(m_payload);
@@ -68,7 +69,7 @@ template <etl::message_id_t ID, typename... T_Payload> class Message : public et
         if (sz < 1 || buf[0] != static_cast<uint8_t>(ID))
             return false;
 
-        constexpr std::size_t kPayloadSize = (sizeof(T_Payload) + ... + 0);
+        constexpr size_t kPayloadSize = (sizeof(T_Payload) + ... + 0);
         if (sz < 1 + kPayloadSize)
             return false;
 
@@ -80,7 +81,7 @@ template <etl::message_id_t ID, typename... T_Payload> class Message : public et
   private:
     payload_tuple m_payload;
 
-    template <typename Tuple, std::size_t... I>
+    template <typename Tuple, size_t... I>
     static void serialize_tuple(uint8_t *&out, const Tuple &tup, etl::index_sequence<I...>)
     {
         (..., copy_one(out, etl::get<I>(tup)));
@@ -89,11 +90,11 @@ template <etl::message_id_t ID, typename... T_Payload> class Message : public et
     template <typename T> static void copy_one(uint8_t *&out, const T &value)
     {
         static_assert(etl::is_trivially_copyable<T>::value, "Only trivially copyable types allowed");
-        std::memcpy(out, &value, sizeof(T));
+        memcpy(out, &value, sizeof(T));
         out += sizeof(T);
     }
 
-    template <typename Tuple, std::size_t... I>
+    template <typename Tuple, size_t... I>
     static void deserialize_tuple(const uint8_t *in, Tuple &t, etl::index_sequence<I...>)
     {
         ((copy_one_from_buffer(in, etl::get<I>(t)), in += sizeof(T_Payload)), ...);
@@ -101,7 +102,7 @@ template <etl::message_id_t ID, typename... T_Payload> class Message : public et
 
     template <typename T> static void copy_one_from_buffer(const uint8_t *ptr, T &dst)
     {
-        std::memcpy(&dst, ptr, sizeof(T));
+        memcpy(&dst, ptr, sizeof(T));
     }
 };
 
